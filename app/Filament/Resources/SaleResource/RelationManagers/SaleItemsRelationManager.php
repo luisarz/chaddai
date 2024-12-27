@@ -10,8 +10,10 @@ use App\Models\RetentionTaxe;
 use App\Models\SaleItem;
 use App\Models\Tribute;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Models\Sale;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
+use Svg\Tag\Image;
 
 class SaleItemsRelationManager extends RelationManager
 {
@@ -31,130 +34,170 @@ class SaleItemsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Información del producto a vender')
-//                    ->description('Agregue los productos que desea vender')
-                    ->icon('heroicon-o-shopping-cart')
-                    ->columns(3)
+
+                Forms\Components\Section::make('')
                     ->schema([
-                        Select::make('inventory_id')
-                            ->label('Producto')
-                            ->searchable()
-                            ->live()
-                            ->debounce(300)
-                            ->columnSpanFull()
-                            ->inlineLabel(false)
-                            ->getSearchResultsUsing(function (string $query) {
-                                $whereHouse = \Auth::user()->employee->branch_id;
 
-                                if (strlen($query) < 3) {
-                                    return []; // No cargar resultados hasta que haya al menos 3 letras
-                                }
-                                return Inventory::with('product')
-                                    ->where('branch_id', $whereHouse)
-                                    ->whereHas('product', function ($q) use ($query) {
-                                        $q->where('name', 'like', "%{$query}%")
-                                            ->orWhere('sku', 'like', "%{$query}%")
-                                            ->orWhere('bar_code', 'like', "%{$query}%");
-                                    })
-                                    ->limit(50) // Limita el número de resultados para evitar cargas pesadas
-                                    ->get()
-                                    ->mapWithKeys(function ($inventory) {
-                                        $displayText = "{$inventory->product->name} - SKU: {$inventory->product->sku} - Codigo: {$inventory->product->bar_code}";
-                                        return [$inventory->id => $displayText];
-                                    });
-                            })
-                            ->getOptionLabelUsing(function ($value) {
-                                $inventory = Inventory::with('product')->find($value);
-                                return $inventory
-                                    ? "{$inventory->product->name} - SKU: {$inventory->product->sku} - Codigo: {$inventory->product->bar_code}"
-                                    : 'Producto no encontrado';
-                            })
-                            ->required()
-                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                $invetory_id = $get('inventory_id');
+                        Forms\Components\Grid::make(12)
+                            ->schema([
 
-                                $price = Price::with('inventory')->where('inventory_id', $invetory_id)->Where('is_default', true)->first();
-                                if ($price && $price->inventory) {
-                                    $set('price', $price->price);
-                                    $set('quantity', 1);
-                                    $set('discount', 0);
-                                    $set('minprice', $price->inventory->cost_with_taxes);
-                                    $this->calculateTotal($get, $set);
-                                } else {
-                                    $set('price', $price->price??0);
-                                    $set('quantity', 1);
-                                    $set('discount', 0);
-                                    $this->calculateTotal($get, $set);
-                                }
-                            }),
+                                Section::make('Venta')
+                                    ->icon('heroicon-o-user')
+                                    ->iconColor('success')
+                                    ->compact()
+                                    ->schema([
 
-                        Forms\Components\TextInput::make('quantity')
-                            ->label('Cantidad')
-                            ->step(1)
-                            ->numeric()
-                            ->live()
-                            ->debounce(300)
-                            ->columnSpan(1)
-                            ->required()
-                            ->live()
-                            ->extraAttributes(['onkeyup' => 'this.dispatchEvent(new Event("input"))'])
-                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                $this->calculateTotal($get, $set);
-                            }),
+                                        Select::make('inventory_id')
+                                            ->label('Producto')
+                                            ->searchable()
+                                            ->live()
+                                            ->debounce(300)
+                                            ->columnSpanFull()
+                                            ->inlineLabel(false)
+                                            ->getSearchResultsUsing(function (string $query) {
+                                                $whereHouse = \Auth::user()->employee->branch_id;
 
-                        Forms\Components\TextInput::make('price')
-                            ->label('Precio')
-                            ->step(0.01)
-                            ->numeric()
-                            ->columnSpan(1)
-                            ->required()
-                            ->live()
-                            ->debounce(300)
+                                                if (strlen($query) < 3) {
+                                                    return []; // No cargar resultados hasta que haya al menos 3 letras
+                                                }
+                                                return Inventory::with('product')
+                                                    ->where('branch_id', $whereHouse)
+                                                    ->whereHas('product', function ($q) use ($query) {
+                                                        $q->where('name', 'like', "%{$query}%")
+                                                            ->orWhere('sku', 'like', "%{$query}%")
+                                                            ->orWhere('bar_code', 'like', "%{$query}%");
+                                                    })
+                                                    ->limit(50) // Limita el número de resultados para evitar cargas pesadas
+                                                    ->get()
+                                                    ->mapWithKeys(function ($inventory) {
+                                                        $displayText = "{$inventory->product->name} - SKU: {$inventory->product->sku} - Codigo: {$inventory->product->bar_code}";
+                                                        return [$inventory->id => $displayText];
+                                                    });
+                                            })
+                                            ->getOptionLabelUsing(function ($value) {
+                                                $inventory = Inventory::with('product')->find($value);
+                                                return $inventory
+                                                    ? "{$inventory->product->name} - SKU: {$inventory->product->sku} - Codigo: {$inventory->product->bar_code}"
+                                                    : 'Producto no encontrado';
+                                            })
+                                            ->required()
+                                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                                $invetory_id = $get('inventory_id');
 
-                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                $this->calculateTotal($get, $set);
-                            }),
+                                                $price = Price::with('inventory','inventory.product')->where('inventory_id', $invetory_id)->Where('is_default', true)->first();
+                                                if ($price && $price->inventory) {
+                                                    $set('price', $price->price);
+                                                    $set('quantity', 1);
+                                                    $set('discount', 0);
+                                                    $set('minprice', $price->inventory->cost_with_taxes);
 
-                        Forms\Components\TextInput::make('discount')
-                            ->label('Descuento')
-                            ->step(0.01)
-                            ->prefix('%')
-                            ->numeric()
-                            ->live()
-                            ->columnSpan(1)
-                            ->required()
-                            ->debounce(300)
+                                                    $this->calculateTotal($get, $set);
+                                                } else {
+                                                    $set('price', $price->price ?? 0);
+                                                    $set('quantity', 1);
+                                                    $set('discount', 0);
+                                                    $this->calculateTotal($get, $set);
+                                                }
 
-                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                $this->calculateTotal($get, $set);
-                            }),
+//
+                                                $images =[ $price->inventory->product->images];
 
-                        Forms\Components\TextInput::make('total')
-                            ->label('Total')
-                            ->step(0.01)
-                            ->readOnly()
-                            ->columnSpan(1)
-                            ->required(),
+                                                $set('product_image', $images);
 
-                        Forms\Components\Toggle::make('is_except')
-                            ->label('Exento de IVA')
-                            ->columnSpan(1)
-                            ->live()
-                            ->afterStateUpdated(function (callable $get, callable $set) {
-                                $this->calculateTotal($get, $set);
-                            }),
-                        Forms\Components\TextInput::make('minprice')
-                            ->label('Tributos')
-                            ->hidden(true)
-                            ->columnSpan(3)
-                            ->afterStateUpdated(function (callable $get, callable $set) {
 
-                            }),
+
+                                            }),
+
+                                        Forms\Components\TextInput::make('quantity')
+                                            ->label('Cantidad')
+                                            ->step(1)
+                                            ->numeric()
+                                            ->live()
+                                            ->debounce(300)
+                                            ->columnSpan(1)
+                                            ->required()
+                                            ->live()
+                                            ->extraAttributes(['onkeyup' => 'this.dispatchEvent(new Event("input"))'])
+                                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                                $this->calculateTotal($get, $set);
+                                            }),
+
+                                        Forms\Components\TextInput::make('price')
+                                            ->label('Precio')
+                                            ->step(0.01)
+                                            ->numeric()
+                                            ->columnSpan(1)
+                                            ->required()
+                                            ->live()
+                                            ->debounce(300)
+                                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                                $this->calculateTotal($get, $set);
+                                            }),
+
+                                        Forms\Components\TextInput::make('discount')
+                                            ->label('Descuento')
+                                            ->step(0.01)
+                                            ->prefix('%')
+                                            ->numeric()
+                                            ->live()
+                                            ->columnSpan(1)
+                                            ->required()
+                                            ->debounce(300)
+                                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                                $this->calculateTotal($get, $set);
+                                            }),
+
+                                        Forms\Components\TextInput::make('total')
+                                            ->label('Total')
+                                            ->step(0.01)
+                                            ->readOnly()
+                                            ->columnSpan(1)
+                                            ->required(),
+
+                                        Forms\Components\Toggle::make('is_except')
+                                            ->label('Exento de IVA')
+                                            ->columnSpan(1)
+                                            ->live()
+                                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                                $this->calculateTotal($get, $set);
+                                            }),
+                                        Forms\Components\TextInput::make('minprice')
+                                            ->label('Tributos')
+                                            ->hidden(true)
+                                            ->columnSpan(3)
+                                            ->afterStateUpdated(function (callable $get, callable $set) {
+
+                                            }),
+
+
+                                    ])->columnSpan(9)
+                                    ->extraAttributes([
+                                        'class' => 'bg-blue-100 border border-blue-500 rounded-md p-2',
+                                    ])
+                                    ->columns(2),
+
+
+                                Section::make('Image')
+                                    ->compact()
+                                    ->schema([
+                                        Forms\Components\FileUpload::make('product_image')
+                                            ->label('')
+                                            ->previewable(true)
+                                            ->openable()
+                                            ->deletable(false)
+                                            ->image(),
+
+
+                                    ])
+                                    ->extraAttributes([
+//                                        'class' => 'bg-blue-100 border border-blue-500 rounded-md p-2',
+                                    ])
+                                    ->columnSpan(3)->columns(1),
+                            ]),
                     ]),
 
 
-            ])
-        ;
+            ]);
     }
 
     public function table(Table $table): Table
@@ -174,7 +217,6 @@ class SaleItemsRelationManager extends RelationManager
                     ->tooltip(function ($record) {
                         return $record->inventory->product->is_service ? 'Es un servicio' : 'No es un servicio';
                     }),
-
 
 
                 Tables\Columns\TextColumn::make('quantity')
@@ -199,7 +241,7 @@ class SaleItemsRelationManager extends RelationManager
                     ->modalWidth('7xl')
                     ->modalHeading('Agregar Producto a venta')
                     ->label('Agregar Producto')
-                    ->after(function (SaleItem $record,Component $livewire) {
+                    ->after(function (SaleItem $record, Component $livewire) {
                         $this->updateTotalSale($record);
                         $livewire->dispatch('refreshSale');
                     }),
@@ -214,7 +256,7 @@ class SaleItemsRelationManager extends RelationManager
                     }),
                 Tables\Actions\DeleteAction::make()
                     ->label('Quitar')
-                    ->after(function (SaleItem $record,Component $livewire) {
+                    ->after(function (SaleItem $record, Component $livewire) {
                         $this->updateTotalSale($record);
                         $livewire->dispatch('refreshSale');
 
@@ -223,13 +265,13 @@ class SaleItemsRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
-                        ->after(function (SaleItem $record,Component $livewire) {
-                        $selectedRecords = $livewire->getSelectedTableRecords();
-                        foreach ($selectedRecords as $record) {
-                            $this->updateTotalSale($record);
-                        }
-                        $livewire->dispatch('refreshSale');
-                    }),
+                        ->after(function (SaleItem $record, Component $livewire) {
+                            $selectedRecords = $livewire->getSelectedTableRecords();
+                            foreach ($selectedRecords as $record) {
+                                $this->updateTotalSale($record);
+                            }
+                            $livewire->dispatch('refreshSale');
+                        }),
 
                 ]),
             ]);
@@ -264,10 +306,11 @@ class SaleItemsRelationManager extends RelationManager
 
 
     }
+
     protected function updateTotalSale(SaleItem $record)
     {
-        $idSale=$record->sale_id;
-        $sale = Sale::where('id',$idSale)->first();
+        $idSale = $record->sale_id;
+        $sale = Sale::where('id', $idSale)->first();
 
 //        dd($sale);
         if ($sale) {
@@ -285,10 +328,9 @@ class SaleItemsRelationManager extends RelationManager
                 $sale->net_amount = round($neto, 2);
                 $sale->taxe = round($iva, 2);
                 $sale->retention = round($retention, 2);
-                $sale->sale_total = round($montoTotal-$retention, 2);
+                $sale->sale_total = round($montoTotal - $retention, 2);
                 $sale->save();
-            }
-            catch (\Exception $e){
+            } catch (\Exception $e) {
                 Log::error($e->getMessage());
             }
 
