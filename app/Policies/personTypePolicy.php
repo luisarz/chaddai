@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\PersonType;
+use App\Models\personType;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class PersonTypePolicy
+class personTypePolicy
 {
     use HandlesAuthorization;
 
@@ -21,7 +21,7 @@ class PersonTypePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, PersonType $personType): bool
+    public function view(User $user, personType $personType): bool
     {
         return $user->can('view_person::type');
     }
@@ -37,7 +37,7 @@ class PersonTypePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, PersonType $personType): bool
+    public function update(User $user, personType $personType): bool
     {
         return $user->can('update_person::type');
     }
@@ -45,7 +45,7 @@ class PersonTypePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, PersonType $personType): bool
+    public function delete(User $user, personType $personType): bool
     {
         return $user->can('delete_person::type');
     }
@@ -61,7 +61,7 @@ class PersonTypePolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, PersonType $personType): bool
+    public function forceDelete(User $user, personType $personType): bool
     {
         return $user->can('force_delete_person::type');
     }
@@ -77,7 +77,7 @@ class PersonTypePolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, PersonType $personType): bool
+    public function restore(User $user, personType $personType): bool
     {
         return $user->can('restore_person::type');
     }
@@ -93,7 +93,7 @@ class PersonTypePolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, PersonType $personType): bool
+    public function replicate(User $user, personType $personType): bool
     {
         return $user->can('replicate_person::type');
     }

@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Cashbox;
+use App\Models\CashBox;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class CashboxPolicy
+class CashBoxPolicy
 {
     use HandlesAuthorization;
 
@@ -21,7 +21,7 @@ class CashboxPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Cashbox $cashbox): bool
+    public function view(User $user, CashBox $cashBox): bool
     {
         return $user->can('view_cashbox');
     }
@@ -37,7 +37,7 @@ class CashboxPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Cashbox $cashbox): bool
+    public function update(User $user, CashBox $cashBox): bool
     {
         return $user->can('update_cashbox');
     }
@@ -45,7 +45,7 @@ class CashboxPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Cashbox $cashbox): bool
+    public function delete(User $user, CashBox $cashBox): bool
     {
         return $user->can('delete_cashbox');
     }
@@ -61,7 +61,7 @@ class CashboxPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Cashbox $cashbox): bool
+    public function forceDelete(User $user, CashBox $cashBox): bool
     {
         return $user->can('force_delete_cashbox');
     }
@@ -77,7 +77,7 @@ class CashboxPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Cashbox $cashbox): bool
+    public function restore(User $user, CashBox $cashBox): bool
     {
         return $user->can('restore_cashbox');
     }
@@ -93,7 +93,7 @@ class CashboxPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Cashbox $cashbox): bool
+    public function replicate(User $user, CashBox $cashBox): bool
     {
         return $user->can('replicate_cashbox');
     }

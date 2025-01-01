@@ -301,6 +301,7 @@ class EmployeeResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->numeric()
+                    ->label('Sucursal')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('job_title_id')
                     ->toggleable(isToggledHiddenByDefault: true)

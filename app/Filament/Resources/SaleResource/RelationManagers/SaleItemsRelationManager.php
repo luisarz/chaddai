@@ -100,7 +100,9 @@ class SaleItemsRelationManager extends RelationManager
                                                 }
 
 //
-                                                $images =[ $price->inventory->product->images];
+                                                $images = is_array($price->inventory->product->images ?? null)
+                                                    ? $price->inventory->product->images
+                                                    : [$price->inventory->product->images ?? null];
 
                                                 $set('product_image', $images);
 
@@ -180,12 +182,15 @@ class SaleItemsRelationManager extends RelationManager
                                 Section::make('Image')
                                     ->compact()
                                     ->schema([
-                                        Forms\Components\FileUpload::make('product_image')
-                                            ->label('')
-                                            ->previewable(true)
-                                            ->openable()
-                                            ->deletable(false)
-                                            ->image(),
+//                                        Forms\Components\FileUpload::make('product_image')
+//                                            ->label('')
+//                                            ->previewable(true)
+//                                            ->openable()
+//                                            ->storeFiles(false)
+//                                            ->deletable(false)
+//                                            ->disabled() // Desactiva el campo
+
+//                                    ->image(),
 
 
                                     ])
@@ -337,5 +342,6 @@ class SaleItemsRelationManager extends RelationManager
 
         }
     }
+
 
 }
