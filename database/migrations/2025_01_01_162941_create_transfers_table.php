@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('transfers', function (Blueprint $table) {
             $table->id();
-            $table->string('transfer_number')->default(0)->nullable();
+            $table->integer('transfer_number')->default(0)->nullable();
             $table->foreignId('wherehouse_from')->constrained('branches');
             $table->foreignId('user_send')->constrained('employees');
             $table->foreignId('wherehouse_to')->constrained('branches');

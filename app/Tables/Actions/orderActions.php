@@ -233,7 +233,6 @@ class orderActions
                         ->success()
                         ->send();
                     $record->update(['is_order' => true, 'is_order_closed_without_invoiced' => true, 'status' => 'Anulado']);
-                    return;
                 }
             });
 

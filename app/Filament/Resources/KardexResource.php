@@ -13,6 +13,7 @@ use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use Filament\Tables\Grouping\Group;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
 use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
@@ -215,7 +216,12 @@ class KardexResource extends Resource
                     ->label('Fecha Operación'),
             ])
             ->filters([
-
+                DateRangeFilter::make('date')->timePicker24()
+                    ->label('Fecha de venta')
+                    ->default([
+                        'start' => now()->subDays(30)->format('Y-m-d'),
+                        'end' => now()->format('Y-m-d'),
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

@@ -326,14 +326,7 @@ class InventoryResource extends Resource
         ];
     }
 
-    public static function afterUpdate(): void
-    {
-        dd('Hola');
 
-    }
 
-    protected function beforeSave(): void
-    {
-        dd('Hola');
-    }
+
 }

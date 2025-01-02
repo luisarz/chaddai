@@ -18,6 +18,8 @@ return new class extends Migration
             $table->decimal('quantity',10,2)->default(0); //cantidad vendida
             $table->decimal('price',10,2)->default(0); //precio de venta con iva
             $table->decimal('total',10,2)->default(0); //total de la venta
+            $table->boolean('status_sent')->default(0);
+            $table->boolean('status_recived')->default(0);
             $table->timestamps();
         });
     }

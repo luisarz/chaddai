@@ -28,7 +28,7 @@ class Inventory extends Model
     protected static function booted()
     {
         parent::booted();
-        static::saved(function ($inventory) {
+        static::created(function ($inventory) {
             $kardex = KardexHelper::createKardexFromInventory(
                 $inventory->branch_id, // Se pasa solo el valor de branch_id (entero)
                 now(), // Fecha

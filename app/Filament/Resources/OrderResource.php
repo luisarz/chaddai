@@ -60,19 +60,6 @@ class OrderResource extends Resource
                                             ->inlineLabel(true)
                                             ->default(now()),
 
-//                                        Forms\Components\Select::make('document_type_id')
-//                                            ->label('Comprobante')
-//                                            ->relationship('documenttype', 'name')
-//                                            ->preload()
-//                                            ->default(1)
-//                                            ->searchable()
-//                                            ->required(),
-//                                        Forms\Components\TextInput::make('document_internal_number')
-//                                            ->label('#   Comprobante')
-//                                            ->required()
-//                                            ->maxLength(255),
-
-
                                         Forms\Components\Select::make('seller_id')
                                             ->label('Vendedor')
                                             ->preload()

@@ -102,9 +102,11 @@ class SaleItemsRelationManager extends RelationManager
                                                 $images = is_array($price->inventory->product->images ?? null)
                                                     ? $price->inventory->product->images
                                                     : [$price->inventory->product->images ?? null];
-
+                                                // Si no hay imágenes, asignar una imagen por defecto
+                                                if (empty($images) || $images[0] === null) {
+                                                    $images = ['products\/noimage.jpg']; // Ruta de la imagen por defecto
+                                                }
                                                 $set('product_image', $images);
-
 
 
                                             }),
@@ -181,15 +183,15 @@ class SaleItemsRelationManager extends RelationManager
                                 Section::make('Image')
                                     ->compact()
                                     ->schema([
-//                                        Forms\Components\FileUpload::make('product_image')
-//                                            ->label('')
-//                                            ->previewable(true)
-//                                            ->openable()
-//                                            ->storeFiles(false)
-//                                            ->deletable(false)
-//                                            ->disabled() // Desactiva el campo
+                                        Forms\Components\FileUpload::make('product_image')
+                                            ->label('')
+                                            ->previewable(true)
+                                            ->openable()
+                                            ->storeFiles(false)
+                                            ->deletable(false)
+                                            ->disabled() // Desactiva el campo
 
-//                                    ->image(),
+                                    ->image(),
 
 
                                     ])

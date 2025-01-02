@@ -93,7 +93,6 @@ class EditSale extends EditRecord
     }
 
 
-
     public function aftersave()//Disminuir el inventario
     {
         $openedCashBox = (new GetCashBoxOpenedService())->getOpenCashBoxId(false);
@@ -156,14 +155,14 @@ class EditSale extends EditRecord
         }
 
 
-//        $sale->update(['status' => 'Finalizado','is_invoiced_order'=>true]);
+        //        $sale->update(['status' => 'Finalizado','is_invoiced_order'=>true]);
         $sale->update([
             'cashbox_open_id' => $openedCashBox,
             'is_invoiced_order' => true,
             'status' => 'Finalizado',
         ]);
 
-//obtener id de la caja y buscar la caja
+        //obtener id de la caja y buscar la caja
         $idCajaAbierta = (new GetCashBoxOpenedService())->getOpenCashBoxId(true);
         $correlativo = CashBoxCorrelative::where('cash_box_id', $idCajaAbierta)->where('document_type_id', $sale->document_type_id)->first();
         $correlativo->current_number = $sale->document_internal_number;

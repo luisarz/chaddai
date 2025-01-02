@@ -13,6 +13,8 @@ class TransferItems extends Model
         'quantity',
         'price',
         'total',
+        'status_sent',
+        'status_recived',
     ];
 
     public function transfer(): BelongsTo

@@ -217,23 +217,23 @@ class TransferItemsRelationManager extends RelationManager
                     ->modalHeading('Agregar Producto al Traslado')
                     ->label('Agregar Producto')
                     ->after(function (TransferItems $record, Component $livewire) {
-                        $this->updateTotalSale($record);
-                        $livewire->dispatch('refreshSale');
+                        $this->updateTotalTransfer($record);
+                        $livewire->dispatch('refreshTransfer');
                     }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->modalWidth('7xl')
                     ->after(function (TransferItems $record, Component $livewire) {
-                        $this->updateTotalSale($record);
-                        $livewire->dispatch('refreshSale');
+                        $this->updateTotalTransfer($record);
+                        $livewire->dispatch('refreshTransfer');
 
                     }),
                 Tables\Actions\DeleteAction::make()
                     ->label('Quitar')
                     ->after(function (TransferItems $record, Component $livewire) {
-                        $this->updateTotalSale($record);
-                        $livewire->dispatch('refreshSale');
+                        $this->updateTotalTransfer($record);
+                        $livewire->dispatch('refreshTransfer');
 
                     }),
             ])
@@ -243,9 +243,9 @@ class TransferItemsRelationManager extends RelationManager
                         ->after(function (TransferItems $record, Component $livewire) {
                             $selectedRecords = $livewire->getSelectedTableRecords();
                             foreach ($selectedRecords as $record) {
-                                $this->updateTotalSale($record);
+                                $this->updateTotalTransfer($record);
                             }
-                            $livewire->dispatch('refreshSale');
+                            $livewire->dispatch('refreshTransfer');
                         }),
 
                 ]),
@@ -270,7 +270,7 @@ class TransferItemsRelationManager extends RelationManager
 
     }
 
-    protected function updateTotalSale(TransferItems $record): void
+    protected function updateTotalTransfer(TransferItems $record): void
     {
         $transferId = $record->transfer_id;
         $transfer = Transfer::where('id', $transferId)->first();
