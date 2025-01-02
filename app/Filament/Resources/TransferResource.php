@@ -10,6 +10,7 @@ use App\Models\Employee;
 use App\Models\Sale;
 use App\Models\Transfer;
 use App\Service\GetCashBoxOpenedService;
+use App\Tables\Actions\transferActions;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -86,7 +87,6 @@ class TransferResource extends Resource
 //                                            ->default('pendiente'),
 
 
-
                                     ])->columnSpan(9)
                                     ->extraAttributes([
                                         'class' => 'bg-blue-100 border border-blue-500 rounded-md p-2',
@@ -132,30 +132,6 @@ class TransferResource extends Resource
                             ]),
                     ]),
 
-
-//                Forms\Components\Section::make()->compact()
-//                    ->schema([
-//                        Forms\Components\TextInput::make('transfer_number')
-//                            ->maxLength(255)
-//                            ->default(0),
-
-
-//                        Forms\Components\DateTimePicker::make('received_date')
-//                            ->hidden(function ($livewire) {
-//                                return $livewire instanceof \Filament\Resources\Pages\CreateRecord; // Ocultar en modo creación
-//                            }),
-//                        Forms\Components\TextInput::make('total')
-//                            ->required()
-//                            ->numeric(),
-
-//                        Forms\Components\TextInput::make('status_received')
-//                            ->required()
-//                            ->hidden(function ($livewire) {
-//                                return $livewire instanceof \Filament\Resources\Pages\CreateRecord; // Ocultar en modo creación
-//                            })
-//                            ->default('pendiente'),
-//                    ])->columns(2)
-
             ]);
     }
 
@@ -164,31 +140,36 @@ class TransferResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('transfer_number')
+                    ->label('Traslado')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('wherehouse_from')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('wherehouseFrom.name')
+                    ->label('Origen')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user_send')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('userSend.name')
+                    ->label('Envió')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('wherehouse_to')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('wherehouseTo.name')
+                    ->label('Destino')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user_recive')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('userRecive.name')
+                    ->label('Recibió')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transfer_date')
+                    ->label('Fecha')
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('received_date')
+                    ->label('Fecha Recibido')
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total')
-                    ->numeric()
+                    ->money('USD',locale: 'es_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_send')
+                    ->label('Estado Envio')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status_received')
+                    ->label('Estado Recibido')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
@@ -203,12 +184,14 @@ class TransferResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(null)
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+               transferActions::printTransfer(),
+
+            ], Tables\Enums\ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
