@@ -19,21 +19,26 @@ class Transfer extends Model
         'status_received',
     ];
 
-    public function wherehouse_from()
+    public function wherehouseFrom()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Branch::class, 'wherehouse_from', 'id');
     }
-    public function user_send()
+    public function userSend()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class, 'user_send', 'id');
     }
-    public function wherehouse_to()
+    public function wherehouseTo()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Branch::class, 'wherehouse_to', 'id');
     }
-    public function user_recive()
+    public function userRecive()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class,'user_recive','id');
+    }
+
+    public function transferDetails()
+    {
+        return $this->hasMany(TransferItems::class,'transfer_id','id');
     }
 
 

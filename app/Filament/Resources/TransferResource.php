@@ -26,12 +26,12 @@ class TransferResource extends Resource
             ->schema([
                 Forms\Components\Section::make()->compact()
                     ->schema([
-                        Forms\Components\TextInput::make('transfer_number')
-                            ->maxLength(255)
-                            ->default(0),
+//                        Forms\Components\TextInput::make('transfer_number')
+//                            ->maxLength(255)
+//                            ->default(0),
                         Forms\Components\Select::make('wherehouse_from')
                             ->label('Sucursal Origen')
-                            ->relationship('wherehouse_from', 'name', function ($query) {
+                            ->relationship('wherehouseFrom', 'name', function ($query) {
                                 $actualbranch = auth()->user()->employee->branch_id;
                                 $query->where('id', $actualbranch); // Filtrar por la sucursal actual
                             })
@@ -43,37 +43,48 @@ class TransferResource extends Resource
 
                         Forms\Components\Select::make('user_send')
                             ->label('Empleado Envia')
-                            ->relationship('user_send', 'name')
+                            ->required()
+                            ->preload()
+                            ->relationship('userSend', 'name')
                             ->searchable(),
-
                         Forms\Components\Select::make('wherehouse_to')
                             ->label('Sucursal Destino')
-                            ->relationship('wherehouse_to', 'name', function ($query) {
+                            ->relationship('wherehouseTo', 'name', function ($query) {
                                 $actualbranch = auth()->user()->employee->branch_id;
-                                $query->where('id','!=', $actualbranch); // Filtrar por la sucursal actual
+                                $query->where('id', '!=', $actualbranch); // Filtrar por la sucursal actual
                             })
-                           
                             ->required(),
-
 
                         Forms\Components\Select::make('user_recive')
                             ->label('Empleado Recibe')
-                            ->relationship('user_recive', 'name')
-                        ,
+                            ->relationship('userRecive', 'name')
+                            ->hidden(function ($livewire) {
+                                return $livewire instanceof \Filament\Resources\Pages\CreateRecord; // Ocultar en modo creación
+                            }),
                         Forms\Components\DateTimePicker::make('transfer_date')
+                            ->inlineLabel(true)
+                            ->default(now())
+                            ->label('Fecha de Traslado')
                             ->required(),
                         Forms\Components\DateTimePicker::make('received_date')
-                            ->required(),
-                        Forms\Components\TextInput::make('total')
-                            ->required()
-                            ->numeric(),
+                            ->hidden(function ($livewire) {
+                                return $livewire instanceof \Filament\Resources\Pages\CreateRecord; // Ocultar en modo creación
+                            }),
+//                        Forms\Components\TextInput::make('total')
+//                            ->required()
+//                            ->numeric(),
                         Forms\Components\TextInput::make('status_send')
                             ->required()
                             ->maxLength(255)
+                            ->hidden(function ($livewire) {
+                                return $livewire instanceof \Filament\Resources\Pages\CreateRecord; // Ocultar en modo creación
+                            })
                             ->default('pendiente'),
                         Forms\Components\TextInput::make('status_received')
                             ->required()
-                            ->maxLength(255)
+                            ->hidden(function ($livewire) {
+                                return $livewire instanceof \Filament\Resources\Pages\CreateRecord; // Ocultar en modo creación
+                            })
                             ->default('pendiente'),
                     ])->columns(2)
 
@@ -140,7 +151,8 @@ class TransferResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\TransferItemsRelationManager::class,
+
         ];
     }
 
