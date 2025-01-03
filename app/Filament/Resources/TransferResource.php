@@ -163,7 +163,7 @@ class TransferResource extends Resource
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total')
-                    ->money('USD',locale: 'es_US')
+                    ->money('USD', locale: 'es_US')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_send')
                     ->label('Estado Envio')
@@ -189,12 +189,15 @@ class TransferResource extends Resource
                 //
             ])
             ->actions([
-               transferActions::printTransfer(),
+                transferActions::printTransfer(),
+                transferActions::anularTransfer(),
+                transferActions::recibirTransferParcial(),
+                transferActions::recibirTransferFull(),
 
             ], Tables\Enums\ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+//                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

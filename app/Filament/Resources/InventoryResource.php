@@ -215,30 +215,22 @@ class InventoryResource extends Resource
                     ->relationship('branch', 'name')
                     ->label('Sucursal')
                     ->preload()
+                    ->default(\Auth::user()->employee->wherehouse->id)
                     ->placeholder('Buscar por sucursal'),
-//                Tables\Filters\Filter::make('product_name') // Filtro para el nombre del producto
-//                ->form([
-//                    TextInput::make('product_name') // Nombre del campo del filtro
-//                    ->label('Producto')
-//                        ->placeholder('Enter part of the product name'),
-//                ])->query(function ($query, array $data) {
-//                        // Usar la relación con la tabla de productos para buscar por nombre
-//                        return $query->whereHas('product', function ($query) use ($data) {
-//                            $query->where('name', 'like', '%' . $data['product_name'] . '%');
-//                        });
-//                    }),
-//                Tables\Filters\Filter::make('product_aplications')
-//                    ->form([TextInput::make('product_aplications')
-//                        ->label('Aplicaciones')
-//                        ->placeholder('Enter part of the product name'),
-//                    ])
-//                    ->query(function ($query, array $data) {
-//                        return $query->whereHas('product', function ($query) use ($data) {
-//                            $query->where('aplications', 'like', '%' . $data['product_aplications'] . '%');
-//                        });
-//                    }),
+//
             ])->filtersFormColumns(2)
-            ->actions([
+//            ->modifyQueryUsing(function ($query) {
+//                $actualWhereHouse = \Auth::user()->employee->wherehouse->id;
+//                // Asegúrate de aplicar la condición al query del filtro
+//                $query->when(request('filter_branch_id'), function ($query, $filterBranchId) use ($actualWhereHouse) {
+//                    $query->where('branch_id', $filterBranchId);
+//                }, function ($query) use ($actualWhereHouse) {
+//                    // Aplica la sucursal actual si no hay un filtro explícito
+//                    $query->where('branch_id', $actualWhereHouse);
+//                });
+//            })
+
+        ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),

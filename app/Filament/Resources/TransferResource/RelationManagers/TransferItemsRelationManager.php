@@ -9,9 +9,11 @@ use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\TransferItems;
 use App\Models\Tribute;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -82,10 +84,20 @@ class TransferItemsRelationManager extends RelationManager
                                                     : 'Producto no encontrado';
                                             })
                                             ->required()
-                                            ->afterStateUpdated(function (callable $get, callable $set) {
+                                            ->afterStateUpdated(function (callable $get, callable $set, Action $action) {
                                                 $inventory_id = $get('inventory_id');
-
+                                                $whereHouseTo = $this->ownerRecord->wherehouse_to;
                                                 $inventory = Inventory::with('product')->where('id', $inventory_id)->first();
+                                                $existInDestiny = Inventory::where('product_id', $inventory->product->id)->where('branch_id', $whereHouseTo)->first();
+                                                if (!$existInDestiny) {
+                                                    Notification::make()
+                                                        ->title('Error')
+                                                        ->body('El producto no existe en la sucursal destino')
+                                                        ->danger()
+                                                        ->send();
+                                                    $set('inventory_id', null);
+                                                        return null;
+                                                }
                                                 if ($inventory && $inventory->cost_without_taxes) {
                                                     $set('price', $inventory->cost_without_taxes);
                                                     $set('quantity', 1);
@@ -133,6 +145,7 @@ class TransferItemsRelationManager extends RelationManager
                                             ->required()
                                             ->live()
                                             ->debounce(300)
+                                            ->extraAttributes(['onkeyup' => 'this.dispatchEvent(new Event("input"))'])
                                             ->afterStateUpdated(function (callable $get, callable $set) {
                                                 $this->calculateTotal($get, $set);
                                             }),

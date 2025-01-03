@@ -118,18 +118,9 @@ class KardexResource extends Resource
                 Tables\Columns\TextColumn::make('operation_type')
                     ->label('Operación')
                     ->searchable(),
-//                Tables\Columns\TextColumn::make('operation_id')
-//                    ->label('ID Operacion')
-//                    ->searchable(),
-//                Tables\Columns\TextColumn::make('operation_detail_id')
-//                    ->label('ID')
-//                    ->numeric()
-//                    ->sortable(),
                 Tables\Columns\TextColumn::make('document_type')
                     ->label('T. Documento')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('document_number')
                     ->label('N° Documento')
                     ->searchable()
@@ -138,8 +129,6 @@ class KardexResource extends Resource
                 Tables\Columns\TextColumn::make('entity')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-//                Tables\Columns\TextColumn::make('nationality')
-//                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('previous_stock')
                     ->label('S. Anterior')
