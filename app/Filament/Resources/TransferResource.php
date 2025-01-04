@@ -191,7 +191,7 @@ class TransferResource extends Resource
             ->actions([
                 transferActions::printTransfer(),
                 transferActions::anularTransfer(),
-                transferActions::recibirTransferParcial(),
+//                transferActions::recibirTransferParcial(),
                 transferActions::recibirTransferFull(),
 
             ], Tables\Enums\ActionsPosition::BeforeCells)
