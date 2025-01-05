@@ -21,6 +21,7 @@ use App\Models\Sale;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Svg\Tag\Image;
+use Symfony\Component\Console\Input\Input;
 
 class SaleItemsRelationManager extends RelationManager
 {
@@ -45,6 +46,10 @@ class SaleItemsRelationManager extends RelationManager
                                     ->iconColor('success')
                                     ->compact()
                                     ->schema([
+                                        Forms\Components\TextInput::make('aplications')
+                                            ->inlineLabel(false)
+                                            ->columnSpanFull()
+                                            ->label('Aplicaciones'),
 
                                         Select::make('inventory_id')
                                             ->label('Producto')
@@ -53,23 +58,30 @@ class SaleItemsRelationManager extends RelationManager
                                             ->debounce(300)
                                             ->columnSpanFull()
                                             ->inlineLabel(false)
-                                            ->getSearchResultsUsing(function (string $query) {
+                                            ->getSearchResultsUsing(function (string $query, callable $get) {
                                                 $whereHouse = \Auth::user()->employee->branch_id;
+                                                $aplications = $get('aplications');
 
                                                 if (strlen($query) < 3) {
                                                     return []; // No cargar resultados hasta que haya al menos 3 letras
                                                 }
-                                                return Inventory::with('product')
-                                                    ->where('branch_id', $whereHouse)
-                                                    ->whereHas('product', function ($q) use ($query) {
-                                                        $q->where('name', 'like', "%{$query}%")
-                                                            ->orWhere('sku', 'like', "%{$query}%")
-                                                            ->orWhere('bar_code', 'like', "%{$query}%");
+                                                return Inventory::with(['product:id,name,sku,bar_code,aplications']) // Especifica los campos necesarios
+                                                ->where('branch_id', $whereHouse)
+                                                    ->whereHas('product', function ($q) use ($aplications, $query) {
+                                                        $q->where(function ($queryBuilder) use ($query) {
+                                                            $queryBuilder->where('name', 'like', "%{$query}%")
+                                                                ->orWhere('sku', 'like', "%{$query}%")
+                                                                ->orWhere('bar_code', 'like', "%{$query}%");
+                                                        });
+                                                        if (!empty($aplications)) {
+                                                            $q->where('aplications', 'like', "%{$aplications}%");
+                                                        }
                                                     })
-                                                    ->limit(50) // Limita el número de resultados para evitar cargas pesadas
+                                                    ->select('id', 'branch_id', 'product_id') // Solo selecciona las columnas necesarias
+                                                    ->limit(50) // Limita los resultados
                                                     ->get()
                                                     ->mapWithKeys(function ($inventory) {
-                                                        $displayText = "{$inventory->product->name} - SKU: {$inventory->product->sku} - Codigo: {$inventory->product->bar_code}";
+                                                        $displayText = "{$inventory->product->name} - SKU: {$inventory->product->sku} - Codigo: {$inventory->product->bar_code} - aplications: {$inventory->product->aplications}";
                                                         return [$inventory->id => $displayText];
                                                     });
                                             })
@@ -83,7 +95,7 @@ class SaleItemsRelationManager extends RelationManager
                                             ->afterStateUpdated(function (callable $get, callable $set) {
                                                 $invetory_id = $get('inventory_id');
 
-                                                $price = Price::with('inventory','inventory.product')->where('inventory_id', $invetory_id)->Where('is_default', true)->first();
+                                                $price = Price::with('inventory', 'inventory.product')->where('inventory_id', $invetory_id)->Where('is_default', true)->first();
                                                 if ($price && $price->inventory) {
                                                     $set('price', $price->price);
                                                     $set('quantity', 1);
@@ -191,7 +203,7 @@ class SaleItemsRelationManager extends RelationManager
                                             ->deletable(false)
                                             ->disabled() // Desactiva el campo
 
-                                    ->image(),
+                                            ->image(),
 
 
                                     ])
