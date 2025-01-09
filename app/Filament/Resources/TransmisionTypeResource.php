@@ -2,43 +2,42 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\JobTitleResource\Pages;
-use App\Filament\Resources\JobTitleResource\RelationManagers;
-use App\Models\JobTitle;
+use App\Filament\Resources\TransmisionTypeResource\Pages;
+use App\Filament\Resources\TransmisionTypeResource\RelationManagers;
+use App\Models\TransmisionType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class JobTitleResource extends Resource
+class TransmisionTypeResource extends Resource
 {
-    protected static ?string $model = JobTitle::class;
+    protected static ?string $model = TransmisionType::class;
+    protected static ?string $label = 'CAT-004 Tipo de Transmisión';
+    protected static ?string $pluralLabel = 'CAT-004 Tipos de Transmisión';
+    protected static ?string $navigationGroup = 'Catálogos Hacienda';
+    protected static ?int $navigationSort = 4;
 
-protected static ?string $label = 'Cargos laborales';
-protected static ?string $navigationGroup = 'Recursos Humanos';
-protected static ?int $navigationSort = 1;
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-        Forms\Components\Section::make('')
-            ->columns(1)
-                ->schema([
-
+                Forms\Components\Section::make('')
+                    ->columns(1)
+                    ->schema([
                         Forms\Components\TextInput::make('code')
                             ->label('Código')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('name')
-                            ->label('Cargo')
+                            ->label('Nombre')
                             ->required()
                             ->maxLength(255),
-                ])
-
+                        ])
             ]);
     }
 
@@ -47,10 +46,8 @@ protected static ?int $navigationSort = 1;
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Código')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Cargo')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -62,16 +59,10 @@ protected static ?int $navigationSort = 1;
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                //
             ])
             ->actions([
-//                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()->label('')->iconSize(IconSize::Medium),
-                    Tables\Actions\EditAction::make()->label('')->iconSize(IconSize::Medium),
-                    Tables\Actions\DeleteAction::make()->label('')->iconSize(IconSize::Medium),
-//                    Tables\Actions\ReplicateAction::make(),
-                    Tables\Actions\RestoreAction::make()->label('')->iconSize(IconSize::Medium),
-//                    ])
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -90,9 +81,9 @@ protected static ?int $navigationSort = 1;
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListJobTitles::route('/'),
-//            'create' => Pages\CreateJobTitle::route('/create'),
-//            'edit' => Pages\EditJobTitle::route('/{record}/edit'),
+            'index' => Pages\ListTransmisionTypes::route('/'),
+//            'create' => Pages\CreateTransmisionType::route('/create'),
+//            'edit' => Pages\EditTransmisionType::route('/{record}/edit'),
         ];
     }
 }

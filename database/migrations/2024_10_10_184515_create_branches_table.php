@@ -27,6 +27,9 @@ return new class extends Migration
             $table->string('web');
             $table->integer('prices_by_products')->default(2);
             $table->json('logo')->nullable();
+            $table->integer('print')->nullable()->default(1);
+            $table->foreignId('destination')->constrained('destination_enviroments');
+            $table->foreignId('contingency')->nullable()->constrained('contingency_types');
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();

@@ -34,6 +34,8 @@ return new class extends Migration
             $table->decimal('cash',10,2)->default(0);
             $table->decimal('change',10,2)->default(0);
             $table->foreignId('casher_id')->nullable()->constrained('employees')->cascadeOnDelete();//Cajero
+            $table->foreignId('billing_model')->constrained('billing_models')->cascadeOnDelete();
+            $table->foreignId('transmision_type')->constrained('transmision_types')->cascadeOnDelete();
             $table->boolean('is_dte')->default(false);
             $table->string('generationCode')->nullable();
             $table->string('receiptStamp')->nullable();

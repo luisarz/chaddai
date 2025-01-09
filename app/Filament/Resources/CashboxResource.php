@@ -19,6 +19,7 @@ class CashboxResource extends Resource
 
     protected static ?string $label = 'Cajas';
     protected static  ?string $navigationGroup="Configuración";
+    protected static  ?int $navigationSort=3;
     public static function form(Form $form): Form
     {
         return $form
