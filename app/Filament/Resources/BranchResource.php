@@ -9,6 +9,7 @@ use App\Models\Distrito;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -117,6 +118,16 @@ class BranchResource extends Resource
                             ->required()
                             ->numeric()
                             ->default(2),
+                        Forms\Components\Select::make('print')
+                            ->label('Impresión')
+                            ->options([
+                                '1' => 'Ticket',
+                                '2' => 'T-Carta',
+                                    ])
+                            ->preload()
+                            ->default(1)
+                            ->searchable()
+                            ->required(),
                         Forms\Components\FileUpload::make('logo')
                             ->directory('wherehouses')
                             ->columnSpanFull(),
@@ -136,6 +147,14 @@ class BranchResource extends Resource
                     ->label('Tipo')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\IconColumn::make('print')
+                    ->label('Impresión')
+                    ->icon(function ($state) {
+                        return $state === 1 ? 'heroicon-o-ticket' : 'heroicon-o-document'; // Ícono según el valor
+                    })
+                    ->sortable()
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('company.name')

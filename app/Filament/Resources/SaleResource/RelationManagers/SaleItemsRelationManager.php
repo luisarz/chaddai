@@ -54,6 +54,7 @@ class SaleItemsRelationManager extends RelationManager
                                         Select::make('inventory_id')
                                             ->label('Producto')
                                             ->searchable()
+                                            ->preload(true)
                                             ->live()
                                             ->debounce(300)
                                             ->columnSpanFull()
@@ -62,7 +63,7 @@ class SaleItemsRelationManager extends RelationManager
                                                 $whereHouse = \Auth::user()->employee->branch_id;
                                                 $aplications = $get('aplications');
 
-                                                if (strlen($query) < 3) {
+                                                if (strlen($query) < 2) {
                                                     return []; // No cargar resultados hasta que haya al menos 3 letras
                                                 }
                                                 return Inventory::with(['product:id,name,sku,bar_code,aplications']) // Especifica los campos necesarios
@@ -91,6 +92,9 @@ class SaleItemsRelationManager extends RelationManager
                                                     ? "{$inventory->product->name} - SKU: {$inventory->product->sku} - Codigo: {$inventory->product->bar_code}"
                                                     : 'Producto no encontrado';
                                             })
+                                            ->extraAttributes([
+                                                'class' => 'text-sm text-gray-700 font-semibold bg-gray-100 rounded-md', // Estilo de TailwindCSS
+                                            ])
                                             ->required()
                                             ->afterStateUpdated(function (callable $get, callable $set) {
                                                 $invetory_id = $get('inventory_id');

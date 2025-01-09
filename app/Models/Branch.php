@@ -19,13 +19,13 @@ class Branch extends Model
         'nit', 'nrc', 'departamento_id',
         'distrito_id', 'address',
         'economic_activity_id', 'phone',
-        'email', 'web', 'prices_by_products',
+        'email', 'web', 'prices_by_products','print',
         'logo', 'is_active'];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'company_id', 'nit', 'nrc', 'departamento_id', 'distrito_id', 'address', 'economic_activity_id', 'phone', 'email', 'web', 'prices_by_products', 'logo', 'is_active']);
+            ->logOnly(['name', 'company_id', 'nit', 'nrc', 'departamento_id', 'distrito_id', 'address', 'economic_activity_id', 'phone', 'email', 'web', 'prices_by_products','print', 'logo', 'is_active']);
     }
 
     protected $casts = [

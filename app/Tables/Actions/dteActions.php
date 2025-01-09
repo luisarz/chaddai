@@ -2,6 +2,7 @@
 
 namespace App\Tables\Actions;
 
+use App\Models\Branch;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\Action;
 use Filament\Support\Enums\IconSize;
@@ -45,7 +46,7 @@ class dteActions
                             ->title('Envío Exitoso')
                             ->success()
                             ->send();
-                        if($data['confirmacion'] === 'si') {
+                        if ($data['confirmacion'] === 'si') {
                             self::imprimirDTE()->action($record);
                             self::enviarDTE()->action($record);
                         }
@@ -156,17 +157,26 @@ class dteActions
             });
     }
 
+
     public static function imprimirDTE(): Action
     {
         return Action::make('pdf')
-            ->label('')
+            ->label('') // Etiqueta vacía, si deseas cambiarla, agrega un texto
             ->icon('heroicon-o-printer')
-            ->tooltip('Imprimir DTE')
             ->iconSize(IconSize::Large)
-            ->visible(fn($record) => $record->is_dte)
-            ->color('default')
-            ->action(function ($record) {
-                return redirect()->route('printDTE', ['idVenta' => $record->generationCode]);
-            });
+            ->color('primary')
+            ->visible(fn($record) => $record->is_dte) // Esto asegura que solo se muestre si el registro tiene un DTE
+//
+
+            ->url(function ($record) {
+                $idSucursal = auth()->user()->employee->branch_id;
+                $print = Branch::find($idSucursal)->print;
+                $ruta = $print == 1 ? 'printDTETicket' : 'printDTEPdf';
+                return route($ruta, ['idVenta' => $record->generationCode]);
+            })
+
+            ->openUrlInNewTab(); // Esto asegura que se abra en una nueva pestaña
+
+
     }
 }

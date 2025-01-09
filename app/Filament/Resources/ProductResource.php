@@ -128,7 +128,7 @@ class ProductResource extends Resource
                     ->html()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('aplications')
-                    ->label('Aplicaión')
+                    ->label('Aplicaicones')
                     ->badge()
                     ->sortable()
                     ->separator(';')
