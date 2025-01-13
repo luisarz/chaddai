@@ -42,6 +42,10 @@ class DteTransmisionWherehouseResource extends Resource
                         ->label('Modelo de Facturación')
                         ->relationship('billingModel', 'name')
                         ->preload()
+                        ->live()
+                        ->afterStateUpdated(function ($get, $set){
+
+                        })
                         ->default(1)
                         ->required(),
                     Forms\Components\Select::make('transmision_type')
@@ -65,18 +69,20 @@ class DteTransmisionWherehouseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('wherehouse')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('where_house.name')
+                    ->label('Sucursal')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('billing_model')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('billingModel.name')
+                    ->label('Modelo de Facturación')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('transmision_type')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('transmisionType.name')
+                    ->label('Tipo de Transmisión')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('printer_type')
-                    ->numeric()
+                    ->label('Tipo de Impresión')
+                    ->formatStateUsing(fn ($state) => $state == 1 ? 'Ticket' : 'PDF')
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

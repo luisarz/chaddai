@@ -61,20 +61,19 @@ class DTEController extends Controller
     {
         $factura = Sale::with('wherehouse.stablishmenttype', 'documenttype', 'seller', 'customer', 'customer.economicactivity', 'customer.departamento', 'customer.documenttypecustomer', 'salescondition', 'paymentmethod', 'saleDetails', 'saleDetails.inventory.product')->find($idVenta);
 
-
-        $establishmentType = $factura->wherehouse->stablishmenttype->code;
-        $conditionCode = $factura->salescondition->code;
+        $establishmentType = trim($factura->wherehouse->stablishmenttype->code);
+        $conditionCode = trim($factura->salescondition->code);
         $receptor = [
             "documentType" => null,//$factura->customer->documenttypecustomer->code ?? null,
             "documentNum" => null,//$factura->customer->dui ?? $factura->customer->nit,
             "nrc" => null,//str_replace("-","",$factura->customer->nrc) ?? null,
-            "name" => $factura->customer->name . " " . $factura->customer->last_name ?? null,
+            "name" => trim($factura->customer->name) . " " . trim($factura->customer->last_name) ?? null,
             "phoneNumber" => str_replace(["(", ")", "-", " "], "", $factura->customer->phone) ?? null,
-            "email" => $factura->customer->email ?? null,
-            "economicAtivity" => $factura->customer->economicactivity->code ?? null,
-            "address" => $factura->customer->address ?? null,
-            "codeCity" => $factura->customer->departamento->code ?? null,
-            "codeMunicipality" => $factura->customer->distrito->code ?? null,
+            "email" => trim($factura->customer->email) ?? null,
+            "economicAtivity" => trim($factura->customer->economicactivity->code) ?? null,
+            "address" => trim($factura->customer->address) ?? null,
+            "codeCity" => trim($factura->customer->departamento->code) ?? null,
+            "codeMunicipality" => trim($factura->customer->distrito->code) ?? null,
         ];
         $extencion = [
             "deliveryName" => $factura->seller->name . " " . $factura->seller->last_name ?? null,
@@ -138,25 +137,25 @@ class DTEController extends Controller
         $factura = Sale::with('wherehouse.stablishmenttype', 'documenttype', 'seller', 'customer', 'customer.economicactivity', 'customer.departamento', 'customer.documenttypecustomer', 'salescondition', 'paymentmethod', 'saleDetails', 'saleDetails.inventory.product')->find($idVenta);
 
 
-        $establishmentType = $factura->wherehouse->stablishmenttype->code;
-        $conditionCode = $factura->salescondition->code;
+        $establishmentType = trim($factura->wherehouse->stablishmenttype->code);
+        $conditionCode = trim($factura->salescondition->code);
         $receptor = [
-            "documentType" => $factura->customer->documenttypecustomer->code ?? null,
-            "documentNum" => $factura->customer->dui ?? $factura->customer->nit,
-            "nit" => str_replace("-", '', $factura->customer->dui) ?? null,
-            "nrc" => str_replace("-", "", $factura->customer->nrc) ?? null,
-            "name" => $factura->customer->name . " " . $factura->customer->last_name ?? null,
-            "phoneNumber" => str_replace(['-', '(', ')', ' '], '', $factura->customer->phone) ?? null,
-            "email" => $factura->customer->email ?? null,
-            "address" => $factura->customer->address ?? null,
+            "documentType" => trim($factura->customer->documenttypecustomer->code) ?? null,
+            "documentNum" => trim($factura->customer->dui ?? $factura->customer->nit),
+            "nit" => trim(str_replace("-", '', $factura->customer->dui)) ?? null,
+            "nrc" => trim(str_replace("-", "", $factura->customer->nrc)) ?? null,
+            "name" => trim($factura->customer->name) . " " . trim($factura->customer->last_name) ?? null,
+            "phoneNumber" => trim(str_replace(['-', '(', ')', ' '], '', $factura->customer->phone)) ?? null,
+            "email" => trim($factura->customer->email) ?? null,
+            "address" => trim($factura->customer->address) ?? null,
             "businessName" => null,
-            "codeCity" => $factura->customer->departamento->code ?? null,
-            "codeMunicipality" => $factura->customer->distrito->code ?? null,
-            "economicAtivity" => $factura->customer->economicactivity->code ?? null,
+            "codeCity" => trim($factura->customer->departamento->code) ?? null,
+            "codeMunicipality" => trim($factura->customer->distrito->code) ?? null,
+            "economicAtivity" => trim($factura->customer->economicactivity->code) ?? null,
         ];
         $extencion = [
-            "deliveryName" => $factura->seller->name . " " . $factura->seller->last_name ?? null,
-            "deliveryDoc" => str_replace("-", "", $factura->seller->dui),
+            "deliveryName" => trim($factura->seller->name) . " " . trim($factura->seller->last_name) ?? null,
+            "deliveryDoc" => trim(str_replace("-", "", $factura->seller->dui)),
         ];
         $items = [];
         $i = 1;
@@ -169,7 +168,7 @@ class DTEController extends Controller
                 "docNum" => null,
                 "code" => $codeProduc,
                 "tributeCode" => null,
-                "description" => $detalle->inventory->product->name,
+                "description" => trim($detalle->inventory->product->name),
                 "quantity" => doubleval($detalle->quantity),
                 "unit" => 1,
                 "except" => false,
@@ -186,8 +185,8 @@ class DTEController extends Controller
         $dte = [
             "documentType" => "03",
             "invoiceId" => intval($factura->id),
-            "establishmentType" => $establishmentType,
-            "conditionCode" => $conditionCode,
+            "establishmentType" => trim($establishmentType),
+            "conditionCode" => trim($conditionCode),
             "receptor" => $receptor,
             "extencion" => $extencion,
             "items" => $items
@@ -242,6 +241,8 @@ class DTEController extends Controller
 
             $response = curl_exec($curl);
 
+//            return response()->json($response);
+
             // Check for cURL errors
             if ($response === false) {
                 return [
@@ -255,6 +256,9 @@ class DTEController extends Controller
             curl_close($curl);
 
             $responseData = json_decode($response, true);
+
+//            return response()->json($responseData);
+
             $responseHacienda = (isset($responseData["estado"]) == "RECHAZADO") ? $responseData : $responseData["respuestaHacienda"];
             $falloDTE = new HistoryDte;
             $ventaID = intval($idVenta);
@@ -277,7 +281,7 @@ class DTEController extends Controller
 
         } catch (Exception $e) {
             $data = [
-                'estado' => 'RECHAZADO ',
+                'estado' => 'RECHAZADO',
                 'mensaje' => "Ocurrio un eror " . $e->getMessage()
             ];
             return $data;
@@ -424,10 +428,7 @@ class DTEController extends Controller
 
     public function printDTETicket($codGeneracion)
     {
-        //abrir el json en DTEs
         $fileName = "/DTEs/{$codGeneracion}.json";
-
-
         if (Storage::disk('public')->exists($fileName)) {
             $fileContent = Storage::disk('public')->get($fileName);
             $DTE = json_decode($fileContent, true); // Decodificar JSON en un array asociativo
@@ -462,14 +463,16 @@ class DTEController extends Controller
             $qr = Storage::url("QR/{$DTE['identificacion']['codigoGeneracion']}.png");
 
             $pdf = Pdf::loadView('DTE.dte-print-ticket', compact('datos', 'qr')); // Cargar vista y pasar datos
-            $path = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
-            if (file_exists($path)) {
-                return response()->file($path);
-            } else {
-                $pdf->save($path);
-            }
+//            $path = storage_path("app/public/DTEs/{$codGeneracion}.pdf");
+//            if (file_exists($path)) {
+//                return response()->file($path);
+//            } else {
+//                $pdf->save($path);
+//            }
 
             $empresa = $this->getConfiguracion();
+            $pdf->set_paper(array(0, 0, 250, 1000)); // Custom paper size
+
 
             return $pdf->stream("{$codGeneracion}.pdf"); // El PDF se abre en una nueva pestaña
         } else {
@@ -478,6 +481,7 @@ class DTEController extends Controller
 
 
     }
+
     public function printDTEPdf($codGeneracion)
     {
         //abrir el json en DTEs

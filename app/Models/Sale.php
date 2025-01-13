@@ -34,6 +34,8 @@ class Sale extends Model
         'cash',
         'change',
         'casher_id',
+        'billing_model',
+        'transmision_type',
         'is_dte',
         'generationCode',
         'receiptStamp',
@@ -74,7 +76,7 @@ class Sale extends Model
     }
     public function paymentmethod(): BelongsTo
     {
-        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id','id');
     }
     public function casher(): BelongsTo
     {
@@ -92,5 +94,16 @@ class Sale extends Model
     public function dteProcesado(): HasOne
     {
         return $this->hasOne(HistoryDte::class,'sales_invoice_id');
+    }
+
+    public function billingModel(): BelongsTo
+    {
+        return $this->belongsTo(BillingModel::class,'billing_model','id');
+
+    }
+    public function transmisionType(): BelongsTo
+    {
+        return $this->belongsTo(TransmisionType::class,'transmision_type','id');
+
     }
 }

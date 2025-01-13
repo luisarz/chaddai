@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignId('distrito_id')->constrained('distritos');
             $table->string('address');
             $table->string('web');
+            $table->foreignId('destination_envarioment')->nullable()->constrained('destination_enviroments');
             $table->string('api_key')->nullable();
             $table->timestamps();
         });

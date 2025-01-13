@@ -155,11 +155,11 @@ class EditSale extends EditRecord
         }
 
 
-        //        $sale->update(['status' => 'Finalizado','is_invoiced_order'=>true]);
         $sale->update([
             'cashbox_open_id' => $openedCashBox,
             'is_invoiced_order' => true,
-            'status' => 'Finalizado',
+            'sales_payment_status'=>'Pagada',
+            'sale_status' => 'Facturada',
         ]);
 
         //obtener id de la caja y buscar la caja

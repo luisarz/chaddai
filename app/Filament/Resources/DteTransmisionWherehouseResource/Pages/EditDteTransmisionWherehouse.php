@@ -10,10 +10,8 @@ class EditDteTransmisionWherehouse extends EditRecord
 {
     protected static string $resource = DteTransmisionWherehouseResource::class;
 
-    protected function getHeaderActions(): array
+    public function aftersave(): void
     {
-        return [
-            Actions\DeleteAction::make(),
-        ];
+        $this->redirect(static::getResource()::getUrl('index'));
     }
 }

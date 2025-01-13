@@ -123,7 +123,7 @@ class SaleResource extends Resource
                                                         ->first();
                                                     if ($lastIssuedDocument) {
                                                         // Establece el número del último documento emitido en otro campo
-                                                        $set('document_internal_number', $lastIssuedDocument->current_number+1);
+                                                        $set('document_internal_number', $lastIssuedDocument->current_number + 1);
                                                     }
                                                 }
                                             })
@@ -166,12 +166,9 @@ class SaleResource extends Resource
                                             })
                                             ->preload()
                                             ->searchable()
+                                            ->required()
                                             ->label('Cliente')
-//                                                    ->inlineLabel(false)
-//                                                    ->columnSpanFull()
                                             ->createOptionForm([
-
-
                                                 Section::make('Nuevo Cliente')
                                                     ->schema([
                                                         Select::make('wherehouse_id')
@@ -202,7 +199,7 @@ class SaleResource extends Resource
                                             ->default('Pendiente')
                                             ->hidden()
                                             ->disabled(),
-                                        Forms\Components\Select::make('status')
+                                        Forms\Components\Select::make('sale_status')
                                             ->options(['Nuevo' => 'Nuevo',
                                                 'Procesando' => 'Procesando',
                                                 'Cancelado' => 'Cancelado',
@@ -276,7 +273,7 @@ class SaleResource extends Resource
                                             ->required()
                                             ->default(1),
                                         Forms\Components\Select::make('payment_method_id')
-                                            ->label('Pago')
+                                            ->label('F. Pago')
                                             ->relationship('paymentmethod', 'name')
                                             ->preload()
                                             ->searchable()
@@ -337,6 +334,13 @@ class SaleResource extends Resource
                     ->falseIcon('heroicon-o-shield-exclamation')
                     ->label('DTE')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('billingModel.name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Facturacion'),
+                Tables\Columns\TextColumn::make('transmisionType.name')
+                    ->label('Transmision'),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
                     ->numeric()
@@ -359,7 +363,7 @@ class SaleResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sales_payment_status')
                     ->label('Pago'),
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('sale_status')
                     ->label('Estado'),
                 Tables\Columns\IconColumn::make('is_taxed')
                     ->label('Gravado')

@@ -2,7 +2,9 @@
 
 namespace App\Tables\Actions;
 
+use App\Filament\Resources\DteTransmisionWherehouseResource;
 use App\Models\Branch;
+use App\Models\DteTransmisionWherehouse;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\Action;
 use Filament\Support\Enums\IconSize;
@@ -22,16 +24,19 @@ class dteActions
             ->icon('heroicon-o-rocket-launch')
             ->iconSize(IconSize::Large)
             ->requiresConfirmation()
-            ->modalHeading('¿Está seguro de enviar el DTE?')
+            ->modalHeading('¿Está seguro de generar el DTE?')
             ->color('danger')
             ->form([
                 Select::make('tipoEnvio')
                     ->label('Tipo de Envío')
                     ->options(['normal' => 'Envío Normal'])
                     ->default('normal')
+//                    ->hidden()
                     ->required(),
                 Select::make('confirmacion')
                     ->label('Enviar por Email')
+//                    ->hidden()
+
                     ->options(['si' => 'Sí, deseo enviar', 'no' => 'No, no enviar'])
                     ->required(),
             ])
@@ -170,8 +175,9 @@ class dteActions
 
             ->url(function ($record) {
                 $idSucursal = auth()->user()->employee->branch_id;
-                $print = Branch::find($idSucursal)->print;
-                $ruta = $print == 1 ? 'printDTETicket' : 'printDTEPdf';
+
+                $print = DteTransmisionWherehouse::where('wherehouse',$idSucursal)->first();
+                $ruta = $print->printer_type == 1 ? 'printDTETicket' : 'printDTEPdf';
                 return route($ruta, ['idVenta' => $record->generationCode]);
             })
 

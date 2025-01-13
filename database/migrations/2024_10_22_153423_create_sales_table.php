@@ -22,8 +22,8 @@ return new class extends Migration
             $table->foreignId('customer_id')->nullable()->constrained('customers')->cascadeOnDelete();//Cliente
             $table->foreignId('operation_condition_id')->nullable()->constrained('operation_conditions')->cascadeOnDelete();//Condicion de operacion contado, credito
             $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods')->cascadeOnDelete();//Metodo de pago cheque, efectivo, tarjeta
-            $table->enum('sales_payment_status',['Pagado','Pendiente','Abono'])->nullable();
-            $table->enum('status',['Nuevo','Procesando','Cancelado','Facturado','Anulado'])->default('Nuevo');
+            $table->enum('sales_payment_status',['Pagada','Pendiente','Abono'])->nullable();
+            $table->enum('sale_status',['Nueva','Procesando','Cancelada','Facturada','Anulado'])->default('Nueva');
             $table->boolean('is_taxed')->default(true);
             $table->boolean('have_retention')->default(false);
             $table->decimal('net_amount',10,2)->default(0);
@@ -34,8 +34,8 @@ return new class extends Migration
             $table->decimal('cash',10,2)->default(0);
             $table->decimal('change',10,2)->default(0);
             $table->foreignId('casher_id')->nullable()->constrained('employees')->cascadeOnDelete();//Cajero
-            $table->foreignId('billing_model')->constrained('billing_models')->cascadeOnDelete();
-            $table->foreignId('transmision_type')->constrained('transmision_types')->cascadeOnDelete();
+            $table->foreignId('billing_model')->nullable()->constrained('billing_models')->cascadeOnDelete();
+            $table->foreignId('transmision_type')->nullable()->constrained('transmision_types')->cascadeOnDelete();
             $table->boolean('is_dte')->default(false);
             $table->string('generationCode')->nullable();
             $table->string('receiptStamp')->nullable();

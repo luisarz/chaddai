@@ -26,6 +26,7 @@ class CreateSale extends CreateRecord
     {
         $data['wherehouse_id'] = auth()->user()->employee->branch_id;
         $data['is_order'] = false;
+        $data['sales_payment_status']='Pendiente';
         $data['is_invoiced_order'] = false;
         return $data;
 
