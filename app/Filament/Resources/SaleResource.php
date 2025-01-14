@@ -30,6 +30,7 @@ use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use pxlrbt\FilamentExcel\Actions\Pages\ExportAction;
 use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 function updateTotalSale(mixed $idItem, array $data): void
 {
@@ -255,7 +256,7 @@ class SaleResource extends Resource
                                             ->label('Retención')
                                             ->onColor('danger')
                                             ->offColor('gray')
-                                            ->default(true)
+                                            ->default(false )
                                             ->required()
                                             ->reactive()
                                             ->afterStateUpdated(function ($set, $state, $get, Component $livewire) {
@@ -313,33 +314,37 @@ class SaleResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('operation_date')
                     ->label('Fecha de venta')
-                    ->date()
+                    ->date('d/m/Y')
                     ->timezone('America/El_Salvador') // Zona horaria (opcional)
                     ->sortable(),
-//                Tables\Columns\TextColumn::make('created_at')
-//                    ->label('Hora Registro')
-//                    ->dateTime('H:i:s A')
-//                    ->timezone('America/El_Salvador') // Zona horaria (opcional)
-//                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('documenttype.name')
                     ->label('Comprobante')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('document_internal_number')
                     ->label('#')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_dte')
-                    ->boolean()
-                    ->tooltip('DTE')
-                    ->trueIcon('heroicon-o-shield-check')
-                    ->falseIcon('heroicon-o-shield-exclamation')
+                Tables\Columns\BadgeColumn::make('is_dte')
+                    ->formatStateUsing(fn ($state) => $state ? 'Enviado' : 'Sin transmisión')
+                    ->color(fn ($state) => $state ? 'success' : 'danger') // Colores: 'success' para verde, 'danger' para rojo
+                    ->tooltip(fn ($state) => $state ? 'Documento transmitido correctamente' : 'Documento pendiente de transmisión')
                     ->label('DTE')
                     ->sortable(),
+
+//                Tables\Columns\IconColumn::make('is_dte')
+//                    ->boolean()
+//                    ->tooltip('DTE')
+//                    ->trueIcon('heroicon-o-shield-check')
+//                    ->falseIcon('heroicon-o-shield-exclamation')
+//                    ->label('DTE')
+//                    ->sortable(),
                 Tables\Columns\TextColumn::make('billingModel.name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Facturacion'),
                 Tables\Columns\TextColumn::make('transmisionType.name')
+                    ->placeholder('Pendiente')
                     ->label('Transmision'),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
@@ -420,7 +425,7 @@ class SaleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->modifyQueryUsing(function ($query) {
-                $query->where('is_invoiced_order', true);
+                $query->where('is_invoiced_order', true)->orderby('operation_date','desc')->orderby('is_dte','asc');
             })
             ->recordUrl(null)
             ->filters([
@@ -441,17 +446,23 @@ class SaleResource extends Resource
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    ExportAction::make()
-                        ->exports([
-                            ExcelExport::make()
-                                ->fromTable()
-                                ->withFilename(fn($resource) => $resource::getModelLabel() . '-' . date('Y-m-d'))
-                                ->withWriterType(\Maatwebsite\Excel\Excel::CSV)
-                                ->withColumns([
-//                                    Column::make('created_at'),
-                                ]),
+//                    ExportBulkAction::make('Exportar'),
+                    ExportBulkAction::make()->exports([
+                        ExcelExport::make()->queue()->label('Exportar Reporte')
+                    ])
 
-                        ]),
+
+//                    ExportAction::make()
+//                        ->exports([
+//                            ExcelExport::make()
+//                                ->fromTable()
+//                                ->withFilename(fn($resource) => $resource::getModelLabel() . '-' . date('Y-m-d'))
+//                                ->withWriterType(\Maatwebsite\Excel\Excel::CSV)
+//                                ->withColumns([
+////                                    Column::make('created_at'),
+//                                ]),
+
+//                        ]),
                 ]),
             ]);
     }
