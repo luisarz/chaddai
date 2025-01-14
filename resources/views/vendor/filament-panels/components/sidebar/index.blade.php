@@ -125,7 +125,10 @@
                         :items="$group->getItems()"
                         :label="$group->getLabel()"
                         :attributes="\Filament\Support\prepare_inherited_attributes($group->getExtraSidebarAttributeBag())"
-                        class="{{ $group->isActive() ? 'rounded-lg text-black bg-primary-200 ':'text-white dark:text-white' }}" {{-- Change 'bg-gray-100' to your default class if inactive --}}
+                        class="{{ $group->isActive() ? 'rounded-lg text-black bg-primary-200 ':'text-white dark:text-black ' }}" {{-- Change 'bg-gray-100' to your default class if inactive --}}
+                        class="{{ $group->isActive() ? 'rounded-lg text-black bg-primary-200 ':'text-white dark:text-black ' }}" {{-- Change 'bg-gray-100' to your default class if inactive --}}
+                        {{-- Cambia 'bg-gray-100' por tu clase predeterminada si está inactivo --}}
+
                 />
             @endforeach
         </ul>

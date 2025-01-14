@@ -27,16 +27,14 @@ class dteActions
             ->modalHeading('¿Está seguro de generar el DTE?')
             ->color('danger')
             ->form([
-                Select::make('tipoEnvio')
-                    ->label('Tipo de Envío')
-                    ->options(['normal' => 'Envío Normal'])
-                    ->default('normal')
-//                    ->hidden()
-                    ->required(),
+//                Select::make('tipoEnvio')
+//                    ->label('Tipo de Envío')
+//                    ->options(['normal' => 'Envío Normal'])
+//                    ->default('normal')
+////                    ->hidden()
+//                    ->required(),
                 Select::make('confirmacion')
-                    ->label('Enviar por Email')
-//                    ->hidden()
-
+                    ->label('Enviar a Hacienda')
                     ->options(['si' => 'Sí, deseo enviar', 'no' => 'No, no enviar'])
                     ->required(),
             ])

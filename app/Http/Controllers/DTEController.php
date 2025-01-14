@@ -291,11 +291,17 @@ class DTEController extends Controller
 
     public function anularDTE($idVenta): array|\Illuminate\Http\JsonResponse
     {
+
+
         if ($this->getConfiguracion() == null) {
             return response()->json(['message' => 'No se ha configurado la empresa']);
         }
         $venta = Sale::with([
+            'wherehouse.stablishmenttype',
             'seller',
+            'documenttype',
+            'salescondition',
+            'paymentmethod',
             'dteProcesado' => function ($query) {
                 $query->where('estado', 'PROCESADO');
             }
@@ -315,7 +321,7 @@ class DTEController extends Controller
             ];
         }
 
-        if (!$venta->status == "Anulado") {
+        if ($venta->status == "Anulado") {
             return [
                 'estado' => 'FALLO', // o 'ERROR'
                 'mensaje' => 'DTE Ya fue anulado ',
@@ -323,23 +329,26 @@ class DTEController extends Controller
         }
 
         $codigoGeneracion = $venta->dteProcesado->codigoGeneracion;
-
+        $establishmentType = trim($venta->wherehouse->stablishmenttype->code);
+        $user=\Auth::user()->employee;
         $dte = [
             "codeGeneration" => $codigoGeneracion,
-            "description" => "pruebaa de anulacion",
-            "establishmentType" => "01",
+            "codeGenerationR" =>null,
+            "description" => "Anulación de la operación",
+            "establishmentType" => $establishmentType,
             "type" => 2,
-            "responsibleName" => "David Antonio Castro Mendez",
+            "responsibleName" => $venta->seller->name." ". $venta->seller->lastname,
             "responsibleDocType" => "13",
-            "responsibleDocNumber" => "04775601-6",
-            "requesterName" => "Karina Cecibel Guzman Castro",
+            "responsibleDocNumber" => $venta->seller->dui,
+            "requesterName" => $user->name." ". $user->lastname,
             "requesterDocType" => "13",
-            "requesterDocNumber" => "04584850-8"
+            "requesterDocNumber" => $user->dui,
         ];
 
 
         return response()->json($dte);
         $responseData = $this->SendAnularDTE($dte, $idVenta);
+    return response()->json($responseData);
 
         if (isset($responseData["estado"]) == "RECHAZADO") {
             return [

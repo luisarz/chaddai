@@ -116,8 +116,8 @@ class DteTransmisionWherehouseResource extends Resource
     {
         return [
             'index' => Pages\ListDteTransmisionWherehouses::route('/'),
-            'create' => Pages\CreateDteTransmisionWherehouse::route('/create'),
-            'edit' => Pages\EditDteTransmisionWherehouse::route('/{record}/edit'),
+//            'create' => Pages\CreateDteTransmisionWherehouse::route('/create'),
+//            'edit' => Pages\EditDteTransmisionWherehouse::route('/{record}/edit'),
         ];
     }
 }

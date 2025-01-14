@@ -448,7 +448,7 @@ class SaleResource extends Resource
                                 ->withFilename(fn($resource) => $resource::getModelLabel() . '-' . date('Y-m-d'))
                                 ->withWriterType(\Maatwebsite\Excel\Excel::CSV)
                                 ->withColumns([
-                                    Column::make('created_at'),
+//                                    Column::make('created_at'),
                                 ]),
 
                         ]),
