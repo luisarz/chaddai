@@ -6,6 +6,8 @@ use App\Filament\Resources\SaleResource;
 use App\Models\CashBoxOpen;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Facades\FilamentView;
+use Filament\Tables\View\TablesRenderHook;
 
 class ListSales extends ListRecords
 {

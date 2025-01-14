@@ -344,7 +344,7 @@ class SaleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label('Facturacion'),
                 Tables\Columns\TextColumn::make('transmisionType.name')
-                    ->placeholder('Pendiente')
+                    ->placeholder('S/N')
                     ->label('Transmision'),
                 Tables\Columns\TextColumn::make('wherehouse.name')
                     ->label('Sucursal')
@@ -446,10 +446,8 @@ class SaleResource extends Resource
             ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-//                    ExportBulkAction::make('Exportar'),
-                    ExportBulkAction::make()->exports([
-                        ExcelExport::make()->queue()->label('Exportar Reporte')
-                    ])
+                    ExportBulkAction::make('Exportar'),
+//                    ExportBulkAction::make()
 
 
 //                    ExportAction::make()

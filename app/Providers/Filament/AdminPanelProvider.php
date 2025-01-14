@@ -5,17 +5,20 @@ namespace App\Providers\Filament;
 use App\Filament\Auth\CustomLogin;
 use App\Filament\Resources\LogResource;
 use App\Filament\Resources\SaleResource;
+use App\Models\DteTransmisionWherehouse;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Pages\Auth\EditProfile;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\MaxWidth;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -23,6 +26,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -53,7 +57,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-               \App\Filament\pages\Dashboard::class,
+                \App\Filament\pages\Dashboard::class,
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
@@ -81,12 +85,33 @@ class AdminPanelProvider extends PanelProvider
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                 \Hasnayeen\Themes\ThemesPlugin::make(),
                 GlobalSearchModalPlugin::make(),
-//                ActivitylogPlugin::make()->resource(LogResource::class),
                 ActivitylogPlugin::make()->label('Bitacora')
-                    ->pluralLabel('Bitacora')  ->navigationSort(3),
-
+                    ->pluralLabel('Bitacora')->navigationSort(3),
 
             ])
+            ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_BEFORE, function () {
+                $whereHouse = auth()->user()->employee->branch_id ?? null;
+                $DTETransmisionType = DteTransmisionWherehouse::where('wherehouse', $whereHouse)->first();
+                $labelTransmisionType = "Previo Normal";
+                $labelTransmisionTypeBorderColor = " #52b01e ";
+                if ($DTETransmisionType->billing_model != 1) {//Previo Normal)
+                    $labelTransmisionType = " Deferido Contingencia ";
+                    $labelTransmisionTypeBorderColor = " red ";
+                }
+
+                return Blade::render(
+                    '<div style="border: solid {{ $borderColor }} 1px; border-radius: 10px; padding: 1px; display: flex; align-items: center; gap: 10px;">
+                            <div>Transmisión</div>
+                            <div style="border: solid {{ $borderColor }} 1px; background-color: {{$borderColor}}; border-radius: 10px; padding: 5px;" >{{ $text }}</div>
+                    </div>',
+                    [
+                        'text' => $labelTransmisionType,
+                        'borderColor' => $labelTransmisionTypeBorderColor, // Asegúrate de que esta variable esté definida.
+                    ]
+                );
+
+
+            })
             ->collapsibleNavigationGroups()
             ->navigationGroups([
                 NavigationGroup::make()
@@ -125,6 +150,12 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Seguridad')
                     ->icon('heroicon-o-shield-check')
                     ->collapsed(),
+
+            ])
+            ->navigationItems([
+                NavigationItem::make('Manual de usuario')
+                    ->url(asset('storage/manual.pdf'), shouldOpenInNewTab: true)
+            ->icon('heroicon-o-book-open')
             ]);
 
     }

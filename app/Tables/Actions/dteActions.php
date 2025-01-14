@@ -113,6 +113,7 @@ class dteActions
             ->modalHeading('Bitácora procesos DTE')
             ->modalContent(function ($record) {
                 $historial = HistoryDte::where('sales_invoice_id', $record->id)->get();
+
                 return view('DTE.historial-dte', [
                     'record' => $record,
                     'historial' => $historial,
