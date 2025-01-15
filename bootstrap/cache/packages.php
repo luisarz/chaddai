@@ -249,6 +249,13 @@
       0 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
     ),
   ),
+  'spatie/laravel-login-link' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Spatie\\LoginLink\\LoginLinkServiceProvider',
+    ),
+  ),
   'spatie/laravel-permission' => 
   array (
     'providers' => 

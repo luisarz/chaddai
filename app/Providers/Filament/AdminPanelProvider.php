@@ -112,51 +112,54 @@ class AdminPanelProvider extends PanelProvider
 
 
             })
+        ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE, function () {
+        return Blade::render('@env(\'local\')<x-login-link />@endenv');
+    })
             ->collapsibleNavigationGroups()
-            ->navigationGroups([
-                NavigationGroup::make()
-                    ->label('Almacén')
-                    ->icon('heroicon-o-building-office')
-                    ->collapsed(),
-                NavigationGroup::make()
-                    ->label('Inventario')
-                    ->icon('heroicon-o-circle-stack')
-                    ->collapsed(),
-                NavigationGroup::make()
-                    ->label('Facturación')
-                    ->icon('heroicon-o-shopping-cart')
-                    ->collapsed(),
-                NavigationGroup::make()
-                    ->label('Caja Chica')
-                    ->icon('heroicon-o-currency-dollar')
-                    ->collapsed(),
-                NavigationGroup::make()
-                    ->label('Contabilidad')
-                    ->icon('heroicon-o-building-office')
-                    ->collapsed(),
-                NavigationGroup::make()
-                    ->label('Recursos Humanos')
-                    ->icon('heroicon-o-academic-cap')
-                    ->collapsed(),
-                NavigationGroup::make()
-                    ->label('Configuración')
-                    ->icon('heroicon-o-cog-6-tooth')
-                    ->collapsed(),
-                NavigationGroup::make()
-                    ->label('Catálogos Hacienda')
-                    ->icon('heroicon-o-magnifying-glass-circle')
-                    ->collapsed(),
-                NavigationGroup::make()
-                    ->label('Seguridad')
-                    ->icon('heroicon-o-shield-check')
-                    ->collapsed(),
+        ->navigationGroups([
+            NavigationGroup::make()
+                ->label('Almacén')
+                ->icon('heroicon-o-building-office')
+                ->collapsed(),
+            NavigationGroup::make()
+                ->label('Inventario')
+                ->icon('heroicon-o-circle-stack')
+                ->collapsed(),
+            NavigationGroup::make()
+                ->label('Facturación')
+                ->icon('heroicon-o-shopping-cart')
+                ->collapsed(),
+            NavigationGroup::make()
+                ->label('Caja Chica')
+                ->icon('heroicon-o-currency-dollar')
+                ->collapsed(),
+            NavigationGroup::make()
+                ->label('Contabilidad')
+                ->icon('heroicon-o-building-office')
+                ->collapsed(),
+            NavigationGroup::make()
+                ->label('Recursos Humanos')
+                ->icon('heroicon-o-academic-cap')
+                ->collapsed(),
+            NavigationGroup::make()
+                ->label('Configuración')
+                ->icon('heroicon-o-cog-6-tooth')
+                ->collapsed(),
+            NavigationGroup::make()
+                ->label('Catálogos Hacienda')
+                ->icon('heroicon-o-magnifying-glass-circle')
+                ->collapsed(),
+            NavigationGroup::make()
+                ->label('Seguridad')
+                ->icon('heroicon-o-shield-check')
+                ->collapsed(),
 
-            ])
-            ->navigationItems([
-                NavigationItem::make('Manual de usuario')
-                    ->url(asset('storage/manual.pdf'), shouldOpenInNewTab: true)
-            ->icon('heroicon-o-book-open')
-            ]);
+        ])
+        ->navigationItems([
+            NavigationItem::make('Manual de usuario')
+                ->url(asset('storage/manual.pdf'), shouldOpenInNewTab: true)
+                ->icon('heroicon-o-book-open')
+        ]);
 
     }
 }

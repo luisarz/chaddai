@@ -54,10 +54,11 @@
     50 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
     51 => 'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider',
     52 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
-    53 => 'Spatie\\Permission\\PermissionServiceProvider',
-    54 => 'App\\Providers\\AppServiceProvider',
-    55 => 'App\\Providers\\Filament\\AdminPanelProvider',
-    56 => 'App\\Providers\\VoltServiceProvider',
+    53 => 'Spatie\\LoginLink\\LoginLinkServiceProvider',
+    54 => 'Spatie\\Permission\\PermissionServiceProvider',
+    55 => 'App\\Providers\\AppServiceProvider',
+    56 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    57 => 'App\\Providers\\VoltServiceProvider',
   ),
   'eager' => 
   array (
@@ -98,10 +99,11 @@
     34 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
     35 => 'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider',
     36 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
-    37 => 'Spatie\\Permission\\PermissionServiceProvider',
-    38 => 'App\\Providers\\AppServiceProvider',
-    39 => 'App\\Providers\\Filament\\AdminPanelProvider',
-    40 => 'App\\Providers\\VoltServiceProvider',
+    37 => 'Spatie\\LoginLink\\LoginLinkServiceProvider',
+    38 => 'Spatie\\Permission\\PermissionServiceProvider',
+    39 => 'App\\Providers\\AppServiceProvider',
+    40 => 'App\\Providers\\Filament\\AdminPanelProvider',
+    41 => 'App\\Providers\\VoltServiceProvider',
   ),
   'deferred' => 
   array (

@@ -4,10 +4,14 @@ namespace App\Filament\Resources\SaleResource\Pages;
 
 use App\Filament\Resources\SaleResource;
 use App\Models\CashBoxOpen;
+use App\Models\Product;
+use App\Models\Sale;
 use Filament\Actions;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\View\TablesRenderHook;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListSales extends ListRecords
 {
@@ -40,6 +44,38 @@ class ListSales extends ListRecords
 
 
                 }),
+        ];
+    }
+
+    public function getTabs(): array
+    {
+        $allCount = Sale::withTrashed()->count();
+        $send = Sale::withTrashed()->where('is_dte', 1)->count();
+        $unSend = Sale::withoutTrashed()->where('is_dte', 0)->count();
+        $deletedCount = Sale::onlyTrashed()->count();
+
+        return [
+            "All" => Tab::make()
+                ->badge($allCount),
+            "Transmitidos" => Tab::make()
+                ->badge($send)
+                ->label('Enviados')
+                ->badgeColor('success')
+                ->icon('heroicon-o-rocket-launch')
+                ->modifyQueryUsing(fn (Builder  $query) => $query->withTrashed()->where('is_dte', 1)),
+
+            "Sin Transmitir" => Tab::make()
+                ->label('Sin Transmisión')
+                ->badge($unSend)
+                ->badgeColor('danger')
+                ->icon('heroicon-s-computer-desktop')
+                ->modifyQueryUsing(fn (Builder $query) => $query->withTrashed()->where('is_dte','=', 0)),
+            "Eliminados" => Tab::make()
+                ->badge($deletedCount)
+                ->label('')
+                ->badgeColor('danger')
+                ->icon('heroicon-s-trash')
+                ->modifyQueryUsing(fn (Builder $query) => $query->onlyTrashed()),
         ];
     }
 }

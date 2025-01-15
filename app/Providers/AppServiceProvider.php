@@ -38,14 +38,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::policy(Activity::class, ActivityPolicy::class);
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::SCRIPTS_AFTER,
-            fn(): string => new HtmlString('
-        <script> document.addEventListener("scroll-to-top", () => window.scrollTo(0, 0))</script>
+            fn (): string => new HtmlString('
+        <script>document.addEventListener("scroll-to-top", () => window.scrollTo(0, 0))</script>
             '),
         );
+
+        Gate::policy(Activity::class, ActivityPolicy::class);
 
 
         TextInput::configureUsing(function (TextInput $textInput) {

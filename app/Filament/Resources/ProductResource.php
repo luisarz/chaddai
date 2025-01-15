@@ -8,6 +8,7 @@ use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,16 +16,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
     protected static ?string $label = 'Prodúctos';
     protected static ?string $navigationGroup = 'Almacén';
     protected static ?string $recordTitleAttribute = 'name';
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'sku', 'bar_code'];
     }
+
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
@@ -115,73 +119,88 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('images')
-                    ->placeholder('Sin imagen')
-                    ->circular()
-                    ->openUrlInNewTab()
-                ->circular(),
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Producto')
-                    ->sortable()
-                    ->wrap()
-                    ->formatStateUsing(fn ($state, $record) => $record->deleted_at ? "<span style='text-decoration: line-through; color: red;'>$state</span>" :$state)
-                    ->html()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('aplications')
-                    ->label('Aplicaicones')
-                    ->badge()
-                    ->sortable()
-                    ->separator(';')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('sku')
-                    ->label('SKU')
-                    ->copyable()
-                    ->copyMessage('SKU  copied')
-                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('bar_code')
-                    ->label('C. Barras')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_service')
-                    ->label('Servicios')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_taxed')
-                    ->label('Gravado')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('category.name')
-                    ->label('Linea')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('marca.nombre')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('unitMeasurement.description')
-                    ->label('Presentación')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Activos')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\Layout\Grid::make()
+                    ->columns(1)
+                    ->schema([
+                        Tables\Columns\Layout\Split::make([
+                            Tables\Columns\Layout\Grid::make()
+                                ->columns(1)
+                                ->schema([
+                                    Tables\Columns\ImageColumn::make('images')
+                                        ->placeholder('Sin imagen')
+                                        ->defaultImageUrl(url('storage/products/noimage.jpg'))
+                                        ->openUrlInNewTab()
+                                        ->height(150)
+                                        ->square()
+                                        ->width(150)
+                                        ->extraAttributes([
+                                            'class' => 'rounded-md',
+                                            'loading' => 'lazy'
+                                        ])
 
-            ]) ->paginationPageOptions([
-                5,10, 25, 50, 100 // Define your specific pagination limits here
+                                ])->grow(false),
+                            Tables\Columns\Layout\Stack::make([
+                                Tables\Columns\TextColumn::make('name')
+                                    ->label('Producto')
+                                    ->weight(FontWeight::SemiBold)
+                                    ->sortable()
+                                    ->icon('heroicon-s-cube')
+                                    ->wrap()
+                                    ->formatStateUsing(fn($state, $record) => $record->deleted_at ? "<span style='text-decoration: line-through; color: red;'>$state</span>" : $state)
+                                    ->html()
+                                    ->searchable(),
+                                Tables\Columns\TextColumn::make('aplications')
+                                    ->label('Aplicaicones')
+                                    ->badge()
+                                    ->icon('heroicon-s-cog')
+
+                                    ->sortable()
+                                    ->separator(';')
+                                    ->searchable(),
+                                Tables\Columns\TextColumn::make('sku')
+                                    ->label('SKU')
+                                    ->copyable()
+                                    ->icon('heroicon-s-qr-code')
+                                    ->copyMessage('SKU  copied')
+                                    ->searchable(),
+
+                                Tables\Columns\TextColumn::make('bar_code')
+                                    ->icon('heroicon-s-code-bracket-square')
+                                    ->label('C. Barras')
+                                    ->toggleable(isToggledHiddenByDefault: true)
+                                    ->searchable(),
+                                Tables\Columns\TextColumn::make('category.name')
+                                    ->label('Linea')
+                                    ->icon('heroicon-s-wrench-screwdriver')
+                                    ->sortable(),
+                                Tables\Columns\TextColumn::make('marca.nombre')
+                                    ->icon('heroicon-s-check-badge')
+                                    ->sortable(),
+                                Tables\Columns\TextColumn::make('unitMeasurement.description')
+                                    ->label('Presentación')
+                                    ->icon('heroicon-s-scale')
+                                    ->sortable(),
+
+                            ])->extraAttributes([
+                                'class' => 'space-y-2'
+                            ])
+                                ->grow(),
+
+
+                        ]),
+
+                    ]),
+
+
             ])
-
+            ->contentGrid([
+                'md' => 3,
+                'xs' => 4,
+            ])
+            ->paginationPageOptions([
+                5, 10, 25, 50, 100 // Define your specific pagination limits here
+            ])
             ->filters([
                 //
                 Tables\Filters\SelectFilter::make('category_id')
@@ -189,17 +208,16 @@ class ProductResource extends Resource
                     ->searchable()
                     ->preload()
                     ->relationship('category', 'name')
-                    ->options(fn () => \App\Models\Category::pluck('name', 'id')->toArray())
+                    ->options(fn() => \App\Models\Category::pluck('name', 'id')->toArray())
                     ->default(null),
                 Tables\Filters\SelectFilter::make('marca_id')
                     ->label('Marca')
                     ->searchable()
                     ->preload()
                     ->relationship('marca', 'nombre')
-                    ->options(fn () => \App\Models\Marca::pluck('nombre', 'id')->toArray())
+                    ->options(fn() => \App\Models\Marca::pluck('nombre', 'id')->toArray())
                     ->default(null),
                 Tables\Filters\TrashedFilter::make(),
-
 
 
             ])
@@ -210,8 +228,8 @@ class ProductResource extends Resource
                     Tables\Actions\ReplicateAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
-                ]),
-            ],position: Tables\Enums\ActionsPosition::BeforeCells)
+                ])->label('Acciones'),
+            ], position: Tables\Enums\ActionsPosition::AfterContent)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -232,8 +250,9 @@ class ProductResource extends Resource
     {
         return [
             'index' => Pages\ListProducts::route('/'),
-            'create' => Pages\CreateProduct::route('/create'),
-            'edit' => Pages\EditProduct::route('/{record}/edit'),
+//            'create' => Pages\CreateProduct::route('/create'),
+//            'view' => Pages\CreateProduct::route('/view'),
+//            'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
     }
 

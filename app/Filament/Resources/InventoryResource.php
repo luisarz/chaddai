@@ -15,6 +15,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Actions\Action;
@@ -146,66 +147,132 @@ class InventoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
-                    ->label('Producto')
-                    ->wrap()
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('product.aplications')
-                    ->label('Aplicaciones')
-                    ->badge()
-                    ->searchable()
-                    ->separator(';'),
-                Tables\Columns\TextColumn::make('product.sku')
-                    ->label('SKU')
-                    ->copyable()
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('branch.name')
-                    ->label('Sucursal')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('stock')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('stock_min')
-                    ->label('Stock Minimo')
-                    ->numeric()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('stock_max')
-                    ->label('Stock Maximo')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('cost_without_taxes')
-                    ->label('Costo')
-                    ->numeric()
-                    ->money('USD', locale: 'en_US')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('cost_with_taxes')
-                    ->label('C.+    IVA')
-                    ->numeric()
-                    ->money('USD', locale: 'en_US')
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('is_stock_alert')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_expiration_date')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\Layout\Grid::make()
+                    ->columns(1)
+                    ->schema([
+                        Tables\Columns\Layout\Split::make([
+                            Tables\Columns\Layout\Grid::make()
+                                ->columns(1)
+                                ->schema([
+                                    Tables\Columns\ImageColumn::make('product.images')
+                                        ->placeholder('Sin imagen')
+                                        ->defaultImageUrl(url('storage/products/noimage.jpg'))
+                                        ->openUrlInNewTab()
+                                        ->height(150)
+                                        ->width(150)
+                                        ->extraAttributes([
+                                            'class' => 'rounded-md',
+                                            'loading' => 'lazy'
+                                        ])
+                                ])->grow(false),
+                            Tables\Columns\Layout\Stack::make([
+                                Tables\Columns\TextColumn::make('product.name')
+                                    ->label('Producto')
+                                    ->wrap()
+                                    ->weight(FontWeight::Medium)
+                                    ->sortable()
+                                    ->icon('heroicon-s-cube')
+                                    ->searchable()
+                                    ->sortable(),
+                                Tables\Columns\TextColumn::make('product.aplications')
+                                    ->label('Aplicaciones')
+                                    ->badge()
+                                    ->icon('heroicon-s-cog')
+                                    ->searchable()
+                                    ->separator(';'),
+                                Tables\Columns\TextColumn::make('product.sku')
+                                    ->label('SKU')
+                                    ->copyable()
+                                    ->icon('heroicon-s-qr-code')
+                                    ->searchable()
+                                    ->sortable(),
+                                Tables\Columns\TextColumn::make('branch.name')
+                                    ->label('Sucursal')
+                                    ->icon('heroicon-s-building-office-2')
+                                    ->sortable(),
+                                Tables\Columns\TextColumn::make('stock')
+                                    ->numeric()
+                                    ->icon('heroicon-s-circle-stack')
+                                    ->getStateUsing(function ($record) {
+//                                        return $record->stock>0?number_format($record->stock,2):'Sin Existencia';
+                                        return  $record->stock
+                                            ?  number_format($record['stock'], 2,'.')
+                                            : 'Sin Stock';
+                                    })
+                                    ->color(function ($record) {
+                                        // Si no hay stock, el texto será rojo
+                                        return $record->stock > 0 ? null : 'danger';
+                                    })
+                                    ->weight(FontWeight::Medium)
+                                    ->sortable(),
+                                Tables\Columns\TextColumn::make('prices')
+                                    ->numeric()
+                                    ->icon('heroicon-s-currency-dollar')
+                                    ->weight(FontWeight::Bold)
+                                    ->getStateUsing(function ($record) {
+                                        // Filtrar el precio donde 'is_default' sea igual a 1
+                                        $defaultPrice = collect($record->prices)->firstWhere('is_default', 1);
+
+                                        // Retornar el precio formateado como moneda con signo de dólar o 'Sin precio' si no se encuentra
+                                        return $defaultPrice
+                                            ? '$' . number_format($defaultPrice['price'], 2)
+                                            : 'Sin precio';
+                                    })
+
+                                    ->sortable(),
+//                                Tables\Columns\TextColumn::make('stock_min')
+//                                    ->label('Stock Minimo')
+//                                    ->numeric()
+//                                    ->toggleable(isToggledHiddenByDefault: true)
+//                                    ->sortable(),
+//                                Tables\Columns\TextColumn::make('stock_max')
+//                                    ->label('Stock Maximo')
+//                                    ->toggleable(isToggledHiddenByDefault: true),
+//                                Tables\Columns\TextColumn::make('cost_without_taxes')
+//                                    ->label('Costo')
+//                                    ->numeric()
+//                                    ->money('USD', locale: 'en_US')
+//                                    ->sortable(),
+//                                Tables\Columns\TextColumn::make('cost_with_taxes')
+//                                    ->label('C.+    IVA')
+//                                    ->numeric()
+//                                    ->money('USD', locale: 'en_US')
+//                                    ->sortable(),
+//                                Tables\Columns\IconColumn::make('is_stock_alert')
+//                                    ->toggleable(isToggledHiddenByDefault: true)
+//                                    ->boolean(),
+//                                Tables\Columns\IconColumn::make('is_expiration_date')
+//                                    ->toggleable(isToggledHiddenByDefault: true)
+//                                    ->boolean(),
+//                                Tables\Columns\IconColumn::make('is_active')
+//                                    ->toggleable(isToggledHiddenByDefault: true)
+//                                    ->boolean(),
+//                                Tables\Columns\TextColumn::make('deleted_at')
+//                                    ->dateTime()
+//                                    ->sortable()
+//                                    ->toggleable(isToggledHiddenByDefault: true),
+//                                Tables\Columns\TextColumn::make('created_at')
+//                                    ->dateTime()
+//                                    ->sortable()
+//                                    ->toggleable(isToggledHiddenByDefault: true),
+//                                Tables\Columns\TextColumn::make('updated_at')
+//                                    ->dateTime()
+//                                    ->sortable()
+//                                    ->toggleable(isToggledHiddenByDefault: true),
+                            ])->extraAttributes([
+                                'class' => 'space-y-2'
+                            ])
+                                ->grow(),
+
+                        ])
+
+
+                    ]),
+
+            ])
+            ->contentGrid([
+                'md' => 3,
+                'xs' => 4,
             ])
 //            ->deferLoading()
             ->striped()
@@ -230,7 +297,7 @@ class InventoryResource extends Resource
 //                });
 //            })
 
-        ->actions([
+            ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
@@ -276,6 +343,8 @@ class InventoryResource extends Resource
                     Tables\Actions\ForceDeleteAction::make(),
                 ]),
             ])
+            ->persistFiltersInSession()
+
             ->headerActions([
 
             ])
@@ -317,8 +386,6 @@ class InventoryResource extends Resource
             'edit' => Pages\EditInventory::route('/{record}/edit'),
         ];
     }
-
-
 
 
 }
