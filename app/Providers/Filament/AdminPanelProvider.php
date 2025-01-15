@@ -64,6 +64,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
 
                 \App\Filament\Resources\SaleResource\Widgets\SalesStat::class,
+                SaleResource\Widgets\ChartWidgetSales::class,
 
             ])
             ->middleware([
