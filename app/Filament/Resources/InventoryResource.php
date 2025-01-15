@@ -159,7 +159,7 @@ class InventoryResource extends Resource
                                         ->defaultImageUrl(url('storage/products/noimage.jpg'))
                                         ->openUrlInNewTab()
                                         ->height(150)
-                                        ->width(150)
+                                        ->width(120)
                                         ->extraAttributes([
                                             'class' => 'rounded-md',
                                             'loading' => 'lazy'

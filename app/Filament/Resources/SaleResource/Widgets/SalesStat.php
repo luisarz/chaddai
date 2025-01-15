@@ -48,6 +48,8 @@ class SalesStat extends BaseWidget
                 ->icon('heroicon-o-currency-dollar')
                 ->chart([0,$sales_total-$purchase_total])
                 ->color('success')
+
+
         ];
     }
 }

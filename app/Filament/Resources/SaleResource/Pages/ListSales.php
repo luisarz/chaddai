@@ -70,12 +70,7 @@ class ListSales extends ListRecords
                 ->badgeColor('danger')
                 ->icon('heroicon-s-computer-desktop')
                 ->modifyQueryUsing(fn (Builder $query) => $query->withTrashed()->where('is_dte','=', 0)),
-            "Eliminados" => Tab::make()
-                ->badge($deletedCount)
-                ->label('')
-                ->badgeColor('danger')
-                ->icon('heroicon-s-trash')
-                ->modifyQueryUsing(fn (Builder $query) => $query->onlyTrashed()),
+
         ];
     }
 }
